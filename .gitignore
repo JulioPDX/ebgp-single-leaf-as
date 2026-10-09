@@ -1,0 +1,7 @@
+.venv/
+.cache/
+.ansible/
+__pycache__/
+*.py[cod]
+anta/
+*.vault.yml

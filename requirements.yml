@@ -1,0 +1,10 @@
+---
+collections:
+  - name: arista.avd
+    version: "6.4.0"
+  - name: arista.eos
+    version: "7.0.0"
+  - name: ansible.netcommon
+    version: "6.0.0"
+  - name: ansible.utils
+    version: "3.1.0"

@@ -1,0 +1,11 @@
+---
+# Keep build, deployment, and ANTA artifacts relative to the root playbooks.
+root_dir: "{{ playbook_dir }}"
+
+ansible_connection: httpapi
+ansible_network_os: arista.eos.eos
+ansible_become: true
+ansible_become_method: enable
+ansible_httpapi_use_ssl: true
+ansible_httpapi_validate_certs: true
+# Supply ansible_user and ansible_password through Vault when deploying.

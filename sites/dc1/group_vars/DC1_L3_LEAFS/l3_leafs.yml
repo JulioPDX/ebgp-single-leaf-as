@@ -1,0 +1,45 @@
+---
+type: l3leaf
+
+bgp_peer_groups:
+  ipv4_underlay_peers:
+    structured_config:
+      allowas_in:
+        enabled: true
+        times: 1
+  evpn_overlay_peers:
+    structured_config:
+      allowas_in:
+        enabled: true
+        times: 1
+
+l3leaf:
+  defaults:
+    platform: cEOS
+    loopback_ipv4_pool: 10.255.0.0/27
+    loopback_ipv4_offset: 2
+    vtep_loopback_ipv4_pool: 10.255.1.0/27
+    uplink_switches: [dc1-spine1, dc1-spine2]
+    uplink_ipv4_pool: 10.255.255.0/27
+    mlag: false
+    virtual_router_mac_address: 00:1c:73:00:00:99
+    spanning_tree_mode: mstp
+  node_groups:
+    - group: DC1_LEAF1
+      bgp_as: 65101
+      nodes:
+        - name: dc1-leaf1a
+          id: 1
+          mgmt_ip: 192.0.2.21/24
+        - name: dc1-leaf1b
+          id: 2
+          mgmt_ip: 192.0.2.22/24
+    - group: DC1_LEAF2
+      bgp_as: 65102
+      nodes:
+        - name: dc1-leaf2a
+          id: 3
+          mgmt_ip: 192.0.2.23/24
+        - name: dc1-leaf2b
+          id: 4
+          mgmt_ip: 192.0.2.24/24

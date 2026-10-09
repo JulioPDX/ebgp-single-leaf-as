@@ -1,0 +1,9 @@
+[project]
+name = "dc1-avd"
+version = "0.1.0"
+description = "Two-spine, four-leaf eBGP and EVPN/VXLAN fabric"
+requires-python = ">=3.12,<3.14"
+dependencies = ["pyavd[ansible]==6.4.0", "ansible-core==2.20.4"]
+
+[tool.uv]
+package = false

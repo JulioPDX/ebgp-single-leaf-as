@@ -1,0 +1,22 @@
+---
+profile: datacenter-evpn
+avd_version: "6.4.0"
+fabric_group: FABRIC
+node_roles: [spine, l3leaf]
+gateway_location: leaf
+underlay: ebgp
+overlay: ebgp-evpn
+network_services: evpn-vrf
+topology_source: user-requested two spines and four independent leaves with paired ASNs and unique VTEPs
+unresolved: []
+assumptions:
+  - BGP overlay means eBGP EVPN with VXLAN data-plane encapsulation.
+  - Both spines use ASN 65100 and act as EVPN route servers.
+  - Leaves 1 and 2 (dc1-leaf1a and dc1-leaf1b) use ASN 65101.
+  - Leaves 3 and 4 (dc1-leaf2a and dc1-leaf2b) use ASN 65102.
+  - MLAG is disabled so every leaf has a unique VTEP IP.
+  - Leaf underlay and overlay peer groups allow one occurrence of the local ASN to accept routes from the other leaf sharing that ASN.
+  - Every leaf has one routed uplink to each spine on Ethernet1 and Ethernet2.
+  - All six nodes use the cEOS platform with Management0 for container management.
+  - Management addresses are documentation-only placeholders in 192.0.2.0/24.
+  - No tenant VLANs, VRFs, or endpoint ports are provisioned until specified.

@@ -1,0 +1,17 @@
+---
+fabric_name: FABRIC
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+# cEOS containers expose their management interface as Management0.
+custom_platform_settings:
+  - platforms: [CEOS, cEOS, ceos, cEOSLab]
+    management_interface: Management0
+
+default_interfaces:
+  - types: [spine]
+    platforms: [default]
+    downlink_interfaces: [Ethernet1-4]
+  - types: [l3leaf]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-2]

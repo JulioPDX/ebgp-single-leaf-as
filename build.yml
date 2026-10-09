@@ -1,0 +1,12 @@
+---
+- name: Build DC1 configurations and documentation
+  hosts: FABRIC
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: Generate structured configurations and fabric documentation
+      ansible.builtin.import_role:
+        name: arista.avd.eos_designs
+    - name: Generate EOS configurations and device documentation
+      ansible.builtin.import_role:
+        name: arista.avd.eos_cli_config_gen
