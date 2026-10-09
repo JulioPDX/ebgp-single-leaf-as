@@ -13,7 +13,7 @@ Both spines use ASN 65100 and act as EVPN route servers. Leaves 1 and 2 (`dc1-le
 | dc1-leaf2a (leaf 3) | 65102 | 10.255.0.5 | 10.255.1.5 |
 | dc1-leaf2b (leaf 4) | 65102 | 10.255.0.6 | 10.255.1.6 |
 
-All six nodes use the `cEOS` platform with `Management0` for container management. Management IPs in `192.0.2.0/24` are placeholders. Change management addressing and interface assignments to match your containers before deployment. Tenant VLANs, VRFs, and endpoint ports are intentionally empty because none were specified. The design decisions are recorded in [design.yml](design.yml).
+All six nodes use the `cEOS` platform with `Management0` for container management.
 
 ## Environment
 
