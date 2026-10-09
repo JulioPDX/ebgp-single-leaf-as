@@ -29,10 +29,10 @@ topology:
       mgmt-ipv4: 192.0.2.24
     dc1-host1:
       mgmt-ipv4: 192.0.2.30
-      startup-config: init-configs/s1-host1.cfg
+      startup-config: init-configs/dc1-host1.cfg
     dc1-host2:
       mgmt-ipv4: 192.0.2.31
-      startup-config: init-configs/s1-host2.cfg
+      startup-config: init-configs/dc1-host2.cfg
 
   links:
     - endpoints: [ "dc1-leaf1a:eth1", "dc1-spine1:eth1" ]
