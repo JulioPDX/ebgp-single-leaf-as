@@ -61,14 +61,3 @@ Leaf Ethernet3 and higher remain available for endpoints. No leaf-to-leaf peer l
 | Router-ID / EVPN Loopback0 | 10.255.0.0/27 (leaf offset 2) |
 | Unique VTEP Loopback1 | 10.255.1.0/27 (leaf offset 2) |
 | Leaf–spine routed links | 10.255.255.0/27 |
-
-## Deploy and validate live devices
-
-Review the generated configurations first. Replace the management placeholders, configure device-side HTTPS eAPI and a trusted certificate, and supply existing device credentials through Ansible Vault or your secret manager. No credentials are stored in this project. The connection settings retain TLS certificate verification.
-
-```sh
-uv run ansible-playbook deploy.yml --ask-vault-pass -e @credentials.vault.yml
-uv run ansible-playbook validate.yml --ask-vault-pass -e @credentials.vault.yml
-```
-
-The encrypted credentials file should define `ansible_user` and `ansible_password`. Build validation checks generated configuration; ANTA validates a reachable, deployed network. Creating this project does not deploy it to devices.

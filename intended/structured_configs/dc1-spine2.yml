@@ -1,3 +1,6 @@
+aaa_authorization:
+  exec:
+    default: local
 aaa_root:
   disabled: true
 config_end: true
@@ -50,11 +53,20 @@ ethernet_interfaces:
     enabled: false
 hostname: dc1-spine2
 ip_routing: true
+local_users:
+- name: arista
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$58471d15fc0b9977$V8nSQ5d8avty1U.Mo90nePjSQvlR./KOFDvUacSkkPO507uybj7Jp95f9nOthYsJq.Y9R86lk04eKhcxx6MMt/
 loopback_interfaces:
 - name: Loopback0
   description: ROUTER_ID
   shutdown: false
   ip_address: 10.255.0.2/32
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+  - name: MGMT
 management_interfaces:
 - name: Management0
   description: OOB_MANAGEMENT
@@ -62,6 +74,7 @@ management_interfaces:
   vrf: MGMT
   ip_address: 192.0.2.12/24
   type: oob
+  gateway: 192.0.2.1
 metadata:
   is_deployed: true
   platform: cEOS
@@ -174,6 +187,10 @@ router_bgp:
 service_routing_protocols_model: multi-agent
 spanning_tree:
   mode: none
+static_routes:
+- vrf: MGMT
+  prefix: 0.0.0.0/0
+  next_hop: 192.0.2.1
 transceiver_qsfp_default_mode_4x10: true
 vlan_internal_order:
   allocation: ascending

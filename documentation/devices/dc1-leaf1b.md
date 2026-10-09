@@ -4,23 +4,31 @@
 
 - [Management](#management)
   - [Management Interfaces](#management-interfaces)
+  - [Management API HTTP](#management-api-http)
 - [Authentication](#authentication)
+  - [Local Users](#local-users)
   - [Enable Password](#enable-password)
+  - [AAA Authorization](#aaa-authorization)
 - [Spanning Tree](#spanning-tree)
   - [Spanning Tree Summary](#spanning-tree-summary)
   - [Spanning Tree Device Configuration](#spanning-tree-device-configuration)
 - [Internal VLAN Allocation Policy](#internal-vlan-allocation-policy)
   - [Internal VLAN Allocation Policy Summary](#internal-vlan-allocation-policy-summary)
   - [Internal VLAN Allocation Policy Device Configuration](#internal-vlan-allocation-policy-device-configuration)
+- [VLANs](#vlans)
+  - [VLANs Summary](#vlans-summary)
+  - [VLANs Device Configuration](#vlans-device-configuration)
 - [Interfaces](#interfaces)
   - [Ethernet Interfaces](#ethernet-interfaces)
   - [Loopback Interfaces](#loopback-interfaces)
+  - [VLAN Interfaces](#vlan-interfaces)
   - [VXLAN Interface](#vxlan-interface)
 - [Routing](#routing)
   - [Service Routing Protocols Model](#service-routing-protocols-model)
   - [Virtual Router MAC Address](#virtual-router-mac-address)
   - [IP Routing](#ip-routing)
   - [IPv6 Routing](#ipv6-routing)
+  - [Static Routes](#static-routes)
   - [Router BGP](#router-bgp)
 - [BFD](#bfd)
   - [Router BFD](#router-bfd)
@@ -43,7 +51,7 @@
 
 | Management Interface | Description | Type | VRF | IP Address | Gateway |
 | -------------------- | ----------- | ---- | --- | ---------- | ------- |
-| Management0 | OOB_MANAGEMENT | oob | MGMT | 192.0.2.22/24 | - |
+| Management0 | OOB_MANAGEMENT | oob | MGMT | 192.0.2.22/24 | 192.0.2.1 |
 
 ##### IPv6
 
@@ -62,11 +70,69 @@ interface Management0
    ip address 192.0.2.22/24
 ```
 
+### Management API HTTP
+
+#### Management API HTTP Summary
+
+| HTTP | HTTPS | UNIX-Socket | Default Services | Session Timeout |
+| ---- | ----- | ----------- | ---------------- | --------------- |
+| False | True | - | - | 1440 minutes |
+
+#### Management API VRF Access
+
+| VRF Name | IPv4 ACL | IPv6 ACL |
+| -------- | -------- | -------- |
+| MGMT | - | - |
+
+#### Management API HTTP Device Configuration
+
+```eos
+!
+management api http-commands
+   protocol https
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+```
+
 ## Authentication
+
+### Local Users
+
+#### Local Users Summary
+
+| User | Privilege | Role | Disabled | Shell |
+| ---- | --------- | ---- | -------- | ----- |
+| arista | 15 | network-admin | False | - |
+
+#### Local Users Device Configuration
+
+```eos
+!
+username arista privilege 15 role network-admin secret sha512 <removed>
+```
 
 ### Enable Password
 
 Enable password has been disabled
+
+### AAA Authorization
+
+#### AAA Authorization Summary
+
+| Type | User Stores |
+| ---- | ----------- |
+| Exec | local |
+
+Authorization for configuration commands is disabled.
+
+#### AAA Authorization Device Configuration
+
+```eos
+aaa authorization exec default local
+!
+```
 
 ## Spanning Tree
 
@@ -103,6 +169,26 @@ spanning-tree mst 0 priority 32768
 vlan internal order ascending range 1006 1199
 ```
 
+## VLANs
+
+### VLANs Summary
+
+| VLAN ID | Name | Trunk Groups |
+| ------- | ---- | ------------ |
+| 10 | Ten | - |
+| 20 | Twenty | - |
+
+### VLANs Device Configuration
+
+```eos
+!
+vlan 10
+   name Ten
+!
+vlan 20
+   name Twenty
+```
+
 ## Interfaces
 
 ### Ethernet Interfaces
@@ -113,6 +199,7 @@ vlan internal order ascending range 1006 1199
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
+| Ethernet3 | SERVER_dc1-host2_eth1 | access | 10 | - | - | - |
 
 *Inherited from Port-Channel Interface
 
@@ -140,6 +227,14 @@ interface Ethernet2
    mtu 9214
    no switchport
    ip address 10.255.255.7/31
+!
+interface Ethernet3
+   description SERVER_dc1-host2_eth1
+   no shutdown
+   switchport access vlan 10
+   switchport mode access
+   switchport
+   spanning-tree portfast
 ```
 
 ### Loopback Interfaces
@@ -175,6 +270,39 @@ interface Loopback1
    ip address 10.255.1.4/32
 ```
 
+### VLAN Interfaces
+
+#### VLAN Interfaces Summary
+
+| Interface | Description | VRF | MTU | Shutdown |
+| --------- | ----------- | --- | --- | -------- |
+| Vlan10 | Ten | OVERLAY | - | False |
+| Vlan20 | Twenty | OVERLAY | - | False |
+
+##### IPv4
+
+| Interface | VRF | IP Address | IP Address Virtual | IP Router Virtual Address | ACL In | ACL Out |
+| --------- | --- | ---------- | ------------------ | ------------------------- | ------ | ------- |
+| Vlan10 | OVERLAY | - | 10.10.10.1/24 | - | - | - |
+| Vlan20 | OVERLAY | - | 10.20.20.1/24 | - | - | - |
+
+#### VLAN Interfaces Device Configuration
+
+```eos
+!
+interface Vlan10
+   description Ten
+   no shutdown
+   vrf OVERLAY
+   ip address virtual 10.10.10.1/24
+!
+interface Vlan20
+   description Twenty
+   no shutdown
+   vrf OVERLAY
+   ip address virtual 10.20.20.1/24
+```
+
 ### VXLAN Interface
 
 #### VXLAN Interface Summary
@@ -184,6 +312,19 @@ interface Loopback1
 | Source Interface | Loopback1 |
 | UDP port | 4789 |
 
+##### VLAN to VNI, Flood List and Multicast Group Mappings
+
+| VLAN | VNI | Flood List | Multicast Group |
+| ---- | --- | ---------- | --------------- |
+| 10 | 10010 | - | - |
+| 20 | 10020 | - | - |
+
+##### VRF to VNI and Multicast Group Mappings
+
+| VRF | VNI | Overlay Multicast Group to Encap Mappings |
+| --- | --- | ----------------------------------------- |
+| OVERLAY | 10 | - |
+
 #### VXLAN Interface Device Configuration
 
 ```eos
@@ -192,6 +333,9 @@ interface Vxlan1
    description dc1-leaf1b_VTEP
    vxlan source-interface Loopback1
    vxlan udp-port 4789
+   vxlan vlan 10 vni 10010
+   vxlan vlan 20 vni 10020
+   vxlan vrf OVERLAY vni 10
 ```
 
 ## Routing
@@ -226,6 +370,7 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 | --- | --------------- |
 | default | True |
 | MGMT | False |
+| OVERLAY | True |
 
 #### IP Routing Device Configuration
 
@@ -233,6 +378,7 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 !
 ip routing
 no ip routing vrf MGMT
+ip routing vrf OVERLAY
 ```
 
 ### IPv6 Routing
@@ -243,6 +389,22 @@ no ip routing vrf MGMT
 | --- | --------------- |
 | default | False |
 | MGMT | False |
+| OVERLAY | False |
+
+### Static Routes
+
+#### Static Routes Summary
+
+| VRF | Destination Prefix | Next Hop IP | Exit interface | Administrative Distance | Tag | Route Name | Metric |
+| --- | ------------------ | ----------- | -------------- | ----------------------- | --- | ---------- | ------ |
+| MGMT | 0.0.0.0/0 | 192.0.2.1 | - | 1 | - | - | - |
+
+#### Static Routes Device Configuration
+
+```eos
+!
+ip route vrf MGMT 0.0.0.0/0 192.0.2.1
+```
 
 ### Router BGP
 
@@ -300,6 +462,19 @@ ASN Notation: asplain
 | ---------- | -------- | ------------ | ------------- | ----------- | ------------ | ------------- | ------------------------------ |
 | EVPN-OVERLAY-PEERS | True | - | - | - | - | default | - |
 
+#### Router BGP VLANs
+
+| VLAN | Route-Distinguisher | Both Route-Target | Import Route Target | Export Route-Target | Redistribute |
+| ---- | ------------------- | ----------------- | ------------------- | ------------------- | ------------ |
+| 10 | 10.255.0.4:10010 | 10010:10010 | - | - | learned |
+| 20 | 10.255.0.4:10020 | 10020:10020 | - | - | learned |
+
+#### Router BGP VRFs
+
+| VRF | Route-Distinguisher | Redistribute | Graceful Restart |
+| --- | ------------------- | ------------ | ---------------- |
+| OVERLAY | 10.255.0.4:10 | connected | - |
+
 #### Router BGP Device Configuration
 
 ```eos
@@ -334,12 +509,29 @@ router bgp 65101
    neighbor 10.255.255.6 description dc1-spine2_Ethernet2
    redistribute connected route-map RM-CONN-2-BGP
    !
+   vlan 10
+      rd 10.255.0.4:10010
+      route-target both 10010:10010
+      redistribute learned
+   !
+   vlan 20
+      rd 10.255.0.4:10020
+      route-target both 10020:10020
+      redistribute learned
+   !
    address-family evpn
       neighbor EVPN-OVERLAY-PEERS activate
    !
    address-family ipv4
       no neighbor EVPN-OVERLAY-PEERS activate
       neighbor IPv4-UNDERLAY-PEERS activate
+   !
+   vrf OVERLAY
+      rd 10.255.0.4:10
+      route-target import evpn 10:10
+      route-target export evpn 10:10
+      router-id 10.255.0.4
+      redistribute connected
 ```
 
 ## BFD
@@ -422,10 +614,13 @@ route-map RM-CONN-2-BGP permit 10
 | VRF Name | IP Routing |
 | -------- | ---------- |
 | MGMT | disabled |
+| OVERLAY | enabled |
 
 ### VRF Instances Device Configuration
 
 ```eos
 !
 vrf instance MGMT
+!
+vrf instance OVERLAY
 ```

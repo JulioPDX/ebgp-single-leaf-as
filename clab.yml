@@ -1,0 +1,47 @@
+---
+name: ebgp
+prefix: ""
+
+mgmt:
+  network: custom_mgmt
+  ipv4-subnet: 192.0.2.0/24
+
+topology:
+  kinds:
+    arista_ceos:
+      image: arista/ceos:latest
+      env:
+        CLAB_MGMT_VRF: MGMT
+  defaults:
+    kind: arista_ceos
+  nodes:
+    dc1-spine1:
+      mgmt-ipv4: 192.0.2.11
+    dc1-spine2:
+      mgmt-ipv4: 192.0.2.12
+    dc1-leaf1a:
+      mgmt-ipv4: 192.0.2.21
+    dc1-leaf1b:
+      mgmt-ipv4: 192.0.2.22
+    dc1-leaf2a:
+      mgmt-ipv4: 192.0.2.23
+    dc1-leaf2b:
+      mgmt-ipv4: 192.0.2.24
+    dc1-host1:
+      mgmt-ipv4: 192.0.2.30
+      startup-config: init-configs/s1-host1.cfg
+    dc1-host2:
+      mgmt-ipv4: 192.0.2.31
+      startup-config: init-configs/s1-host2.cfg
+
+  links:
+    - endpoints: [ "dc1-leaf1a:eth1", "dc1-spine1:eth1" ]
+    - endpoints: [ "dc1-leaf1a:eth2", "dc1-spine2:eth1" ]
+    - endpoints: [ "dc1-leaf1b:eth1", "dc1-spine1:eth2" ]
+    - endpoints: [ "dc1-leaf1b:eth2", "dc1-spine2:eth2" ]
+    - endpoints: [ "dc1-leaf2a:eth1", "dc1-spine1:eth3" ]
+    - endpoints: [ "dc1-leaf2a:eth2", "dc1-spine2:eth3" ]
+    - endpoints: [ "dc1-leaf2b:eth1", "dc1-spine1:eth4" ]
+    - endpoints: [ "dc1-leaf2b:eth2", "dc1-spine2:eth4" ]
+    - endpoints: [ "dc1-host1:eth1", "dc1-leaf1a:eth3" ]
+    - endpoints: [ "dc1-host2:eth1", "dc1-leaf1b:eth3" ]
